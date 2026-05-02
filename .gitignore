@@ -1,0 +1,12 @@
+# compiled binary
+/s3-summary
+
+# goreleaser output
+/dist/
+
+# editor
+.idea/
+.vscode/
+
+# os
+.DS_Store
