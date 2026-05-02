@@ -86,18 +86,38 @@ s3-summary cost --start 2026-04-01 --end 2026-05-01
 s3-summary cost --format json
 ```
 
-Typical usage types to watch for:
+#### Reading usage type codes
 
-| Usage type pattern              | What it means                                |
-| ------------------------------- | -------------------------------------------- |
-| `TimedStorage-ByteHrs`          | STANDARD storage                             |
-| `TimedStorage-*-IA-ByteHrs`     | IA storage                                   |
-| `TimedStorage-GlacierByteHrs`   | Glacier storage                              |
-| `Requests-Tier1`                | PUT, COPY, POST, LIST                        |
-| `Requests-Tier2`                | GET, SELECT                                  |
-| `Retrieval-*`                   | Glacier restore (often a surprise)           |
-| `EarlyDelete-*`                 | Deleting Glacier objects before min duration |
-| `DataTransfer-Out-Bytes`        | Outbound data to internet                    |
+Most usage types are prefixed with a region code: `USE1` = us-east-1,
+`USE2` = us-east-2, `USW1` = us-west-1, `USW2` = us-west-2,
+`EUW1` = eu-west-1, etc. Usage in us-east-1 often appears with no prefix
+at all. So `USW2-TimedStorage-ByteHrs` means **STANDARD storage in
+us-west-2**, billed in byte-hours.
+
+Storage charges (the "rent" for keeping bytes around):
+
+| Code suffix                  | Storage class                                 |
+| ---------------------------- | --------------------------------------------- |
+| `TimedStorage-ByteHrs`       | STANDARD                                      |
+| `TimedStorage-SIA-ByteHrs`   | Standard-IA                                   |
+| `TimedStorage-ZIA-ByteHrs`   | One Zone-IA                                   |
+| `TimedStorage-GIR-ByteHrs`   | Glacier Instant Retrieval                     |
+| `TimedStorage-GlacierByteHrs`| Glacier Flexible Retrieval                    |
+| `TimedStorage-GDA-ByteHrs`   | Glacier Deep Archive                          |
+| `TimedStorage-INT-FA-ByteHrs`| Intelligent-Tiering, Frequent Access tier     |
+| `TimedStorage-INT-IA-ByteHrs`| Intelligent-Tiering, Infrequent Access tier   |
+
+Other charge categories worth knowing:
+
+| Code pattern              | What it means                                    |
+| ------------------------- | ------------------------------------------------ |
+| `Requests-Tier1`          | PUT, COPY, POST, LIST                            |
+| `Requests-Tier2`          | GET, SELECT                                      |
+| `Requests-Tier3`          | Glacier restore requests                         |
+| `Retrieval-*`             | Glacier restore byte charges (often a surprise)  |
+| `EarlyDelete-*`           | Deleting Glacier objects before minimum duration |
+| `DataTransfer-Out-Bytes`  | Outbound data to the internet                    |
+| `DataTransfer-Regional-*` | Cross-region replication / cross-region GETs     |
 
 ## How recommendations work
 
