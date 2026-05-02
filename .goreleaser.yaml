@@ -37,6 +37,50 @@ archives:
 checksum:
   name_template: 'checksums.txt'
 
+dockers:
+  - image_templates:
+      - "ghcr.io/emcniece/s3-summary:{{ .Version }}-amd64"
+      - "ghcr.io/emcniece/s3-summary:latest-amd64"
+    dockerfile: Dockerfile
+    use: buildx
+    goos: linux
+    goarch: amd64
+    build_flag_templates:
+      - "--platform=linux/amd64"
+      - "--label=org.opencontainers.image.title={{.ProjectName}}"
+      - "--label=org.opencontainers.image.description=Analyze AWS S3 storage costs across all buckets"
+      - "--label=org.opencontainers.image.version={{.Version}}"
+      - "--label=org.opencontainers.image.created={{.Date}}"
+      - "--label=org.opencontainers.image.revision={{.FullCommit}}"
+      - "--label=org.opencontainers.image.source=https://github.com/emcniece/s3-summary"
+      - "--label=org.opencontainers.image.licenses=MIT"
+  - image_templates:
+      - "ghcr.io/emcniece/s3-summary:{{ .Version }}-arm64"
+      - "ghcr.io/emcniece/s3-summary:latest-arm64"
+    dockerfile: Dockerfile
+    use: buildx
+    goos: linux
+    goarch: arm64
+    build_flag_templates:
+      - "--platform=linux/arm64"
+      - "--label=org.opencontainers.image.title={{.ProjectName}}"
+      - "--label=org.opencontainers.image.description=Analyze AWS S3 storage costs across all buckets"
+      - "--label=org.opencontainers.image.version={{.Version}}"
+      - "--label=org.opencontainers.image.created={{.Date}}"
+      - "--label=org.opencontainers.image.revision={{.FullCommit}}"
+      - "--label=org.opencontainers.image.source=https://github.com/emcniece/s3-summary"
+      - "--label=org.opencontainers.image.licenses=MIT"
+
+docker_manifests:
+  - name_template: "ghcr.io/emcniece/s3-summary:{{ .Version }}"
+    image_templates:
+      - "ghcr.io/emcniece/s3-summary:{{ .Version }}-amd64"
+      - "ghcr.io/emcniece/s3-summary:{{ .Version }}-arm64"
+  - name_template: "ghcr.io/emcniece/s3-summary:latest"
+    image_templates:
+      - "ghcr.io/emcniece/s3-summary:latest-amd64"
+      - "ghcr.io/emcniece/s3-summary:latest-arm64"
+
 # release-please owns the changelog; tell GoReleaser not to generate its own.
 changelog:
   disable: true

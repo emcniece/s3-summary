@@ -23,6 +23,47 @@ cd s3-summary
 go build -o s3-summary .
 ```
 
+### Docker
+
+Multi-arch images (`linux/amd64` and `linux/arm64`) are published to GitHub
+Container Registry on every release:
+
+```bash
+docker pull ghcr.io/emcniece/s3-summary:latest
+# or pin a version:
+docker pull ghcr.io/emcniece/s3-summary:0.1.0
+```
+
+Pass AWS credentials in via environment variables:
+
+```bash
+docker run --rm \
+  -e AWS_ACCESS_KEY_ID="$AWS_ACCESS_KEY_ID" \
+  -e AWS_SECRET_ACCESS_KEY="$AWS_SECRET_ACCESS_KEY" \
+  -e AWS_SESSION_TOKEN="$AWS_SESSION_TOKEN" \
+  -e AWS_REGION="${AWS_REGION:-us-east-1}" \
+  ghcr.io/emcniece/s3-summary:latest scan
+```
+
+`AWS_SESSION_TOKEN` is only needed for STS / temporary credentials (SSO,
+assumed roles); leave it unset for plain IAM user keys. `AWS_REGION` sets
+the default region the SDK uses for service calls; bucket-specific regions
+are still resolved per bucket.
+
+If you'd rather use your existing `~/.aws/credentials` and SSO config,
+mount the directory in. The image runs as the `nonroot` user (UID 65532)
+with `HOME=/home/nonroot`:
+
+```bash
+docker run --rm \
+  -v "$HOME/.aws:/home/nonroot/.aws:ro" \
+  -e AWS_PROFILE="${AWS_PROFILE:-default}" \
+  ghcr.io/emcniece/s3-summary:latest scan
+```
+
+The image is built from `gcr.io/distroless/static-debian12:nonroot` — about
+2 MB of base layers, no shell, no package manager.
+
 ## Authentication
 
 Uses the standard AWS credential chain — environment variables,
