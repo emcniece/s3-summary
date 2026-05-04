@@ -19,6 +19,13 @@ counts, sizes, storage classes, and ages, then recommends storage-class
 transitions based on AWS's published cost breakpoints.`,
 }
 
+// SetVersionInfo populates the metadata shown by --version. Called from
+// main.go with values injected at build time by goreleaser; falls back to
+// dev defaults for plain `go build`.
+func SetVersionInfo(version, commit, date string) {
+	rootCmd.Version = fmt.Sprintf("%s (commit %s, built %s)", version, commit, date)
+}
+
 // Execute runs the root command.
 func Execute() {
 	if err := rootCmd.Execute(); err != nil {
@@ -29,4 +36,5 @@ func Execute() {
 
 func init() {
 	rootCmd.PersistentFlags().StringVarP(&flagFormat, "format", "f", "table", "output format: table | json | csv")
+	rootCmd.SetVersionTemplate("s3-summary {{ .Version }}\n")
 }
